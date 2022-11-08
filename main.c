@@ -25,7 +25,7 @@ int main(int argc, char argv){//compile with     gcc main.c -o main $(sdl2-confi
     SDL_Delay(5000);//waiting delay, in ms
 
 
-
+    SDL_DestroyWindow(w);
     SDL_Quit();
 
     return 0;
