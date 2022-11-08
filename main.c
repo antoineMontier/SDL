@@ -18,6 +18,60 @@ int main(int argc, char *argv[]){//compile with     gcc main.c -o main $(sdl2-co
         SDL_ExitWithError("window and render creation failed");
 
     /*--------------------------------------------------------------------------------*/
+    //                        ren, r  , g  , b  , alpha
+    if(SDL_SetRenderDrawColor(ren, 112, 168, 237, SDL_ALPHA_OPAQUE) != 0)
+        SDL_ExitWithError("failed to set color");
+
+
+    if(SDL_RenderDrawPoint(ren, 100, 200) != 0)         //point
+        SDL_ExitWithError("failed to draw a point");
+
+    if(SDL_RenderDrawLine(ren, 200, 200, 300, 550) != 0)//line
+        SDL_ExitWithError("failed to draw a line");
+
+    if(SDL_SetRenderDrawColor(ren, 255, 168, 20, SDL_ALPHA_OPAQUE) != 0)
+        SDL_ExitWithError("failed to set color");
+
+    SDL_Rect rectangle;
+    rectangle.x = 400;
+    rectangle.y = 50;
+    rectangle.w = 180;
+    rectangle.h = 130;
+
+    if(SDL_RenderDrawRect(ren, &rectangle) != 0)
+        SDL_ExitWithError("failed to draw an empty rectangle");
+
+    if(SDL_SetRenderDrawColor(ren, 0, 200, 20, SDL_ALPHA_OPAQUE) != 0)
+        SDL_ExitWithError("failed to set color");
+
+    rectangle.x = 50;
+    rectangle.y = 450;
+    rectangle.w = 180;
+    rectangle.h = 130;
+
+    if(SDL_RenderFillRect(ren, &rectangle) != 0)
+        SDL_ExitWithError("failed to draw a full rectangle");
+
+        //lets create a red border for the rectangle :
+    
+    if(SDL_SetRenderDrawColor(ren, 255, 0, 0, SDL_ALPHA_OPAQUE) != 0)
+        SDL_ExitWithError("failed to set color");
+
+    if(SDL_RenderDrawRect(ren, &rectangle) != 0)
+        SDL_ExitWithError("failed to draw a full rectangle");
+
+        //lets thick it :
+
+    rectangle.x = 51;
+    rectangle.y = 451;
+    rectangle.w = 178;
+    rectangle.h = 128;
+
+    if(SDL_RenderDrawRect(ren, &rectangle) != 0)
+        SDL_ExitWithError("failed to draw a full rectangle");
+    
+
+
     SDL_RenderPresent(ren);//refresh the render
     SDL_Delay(5000);//waiting delay, in ms
     /*--------------------------------------------------------------------------------*/
