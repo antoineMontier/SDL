@@ -11,6 +11,8 @@ int main(int argc, char *argv[]){//compile with     gcc main.c -o main $(sdl2-co
     //at this point, the SDL is well initialised, we can afford it because of the if
 
     SDL_Window *w;//open a window command
+    SDL_Renderer *ren;//render creation
+
 
     w = SDL_CreateWindow("First SDL2 window",   //name of the window
                         SDL_WINDOWPOS_CENTERED, //x position
@@ -21,10 +23,31 @@ int main(int argc, char *argv[]){//compile with     gcc main.c -o main $(sdl2-co
     if(w == NULL)
         SDL_ExitWithError("window creation");
 
+    /*--------------------------------------------------------------------------------*/
+    ren = SDL_CreateRenderer(w, -1, SDL_RENDERER_SOFTWARE);
+                                    /*
+                                    SDL_RENDERER_SOFTWARE           asks the software to proceed
+                                    SDL_RENDERER_ACCELERATED        asks the graphic card to help proceed
+                                    SDL_RENDERER_PRESENTVSYNC       used for vertical display
+                                    SDL_RENDERER_TARGETTEXTURE      not useful for me, used to focus on a precise texture
+                                    */
+
+    if(ren == NULL)
+        SDL_ExitWithError("render creation failed");
+
+    SDL_RenderPresent(ren);//refresh the render
+
+
+    if(SDL_RenderClear(ren) != 0)
+        SDL_ExitWithError("render deletion failed"); //delete the render ; may be usefull if we want to modify
+
+
+    
 
     SDL_Delay(5000);//waiting delay, in ms
+    /*--------------------------------------------------------------------------------*/
 
-
+    SDL_DestroyRenderer(ren);
     SDL_DestroyWindow(w);
     SDL_Quit();
 
