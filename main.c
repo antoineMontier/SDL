@@ -1,7 +1,7 @@
 #include <SDL.h>
 #include <stdio.h>
 
-int main(int argc, char argv){
+int main(int argc, char argv){//compile with     gcc main.c -o main $(sdl2-config --cflags --libs)
 
     SDL_version nb;
     SDL_VERSION(&nb);
