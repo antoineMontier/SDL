@@ -3,6 +3,10 @@
 #include <stdlib.h>
 
 void SDL_ExitWithError(const char *string);
+void point(SDL_Renderer* r, int x, int y);
+void line(SDL_Renderer* r, int x1, int y1, int x2, int y2);
+void color(SDL_Renderer* r, int red, int green, int blue, int alpha);
+void rect(SDL_Renderer* r, int x, int y, int width, int height, int filled);
 
 int main(int argc, char *argv[]){//compile with     gcc main.c -o main $(sdl2-config --cflags --libs)
 
@@ -18,59 +22,39 @@ int main(int argc, char *argv[]){//compile with     gcc main.c -o main $(sdl2-co
         SDL_ExitWithError("window and render creation failed");
 
     /*--------------------------------------------------------------------------------*/
-    //                        ren, r  , g  , b  , alpha
-    if(SDL_SetRenderDrawColor(ren, 112, 168, 237, SDL_ALPHA_OPAQUE) != 0)
-        SDL_ExitWithError("failed to set color");
-
-
-    if(SDL_RenderDrawPoint(ren, 100, 200) != 0)         //point
-        SDL_ExitWithError("failed to draw a point");
-
-    if(SDL_RenderDrawLine(ren, 200, 200, 300, 550) != 0)//line
-        SDL_ExitWithError("failed to draw a line");
-
-    if(SDL_SetRenderDrawColor(ren, 255, 168, 20, SDL_ALPHA_OPAQUE) != 0)
-        SDL_ExitWithError("failed to set color");
-
-    SDL_Rect rectangle;
-    rectangle.x = 400;
-    rectangle.y = 50;
-    rectangle.w = 180;
-    rectangle.h = 130;
-
-    if(SDL_RenderDrawRect(ren, &rectangle) != 0)
-        SDL_ExitWithError("failed to draw an empty rectangle");
-
-    if(SDL_SetRenderDrawColor(ren, 0, 200, 20, SDL_ALPHA_OPAQUE) != 0)
-        SDL_ExitWithError("failed to set color");
-
-    rectangle.x = 50;
-    rectangle.y = 450;
-    rectangle.w = 180;
-    rectangle.h = 130;
-
-    if(SDL_RenderFillRect(ren, &rectangle) != 0)
-        SDL_ExitWithError("failed to draw a full rectangle");
-
-        //lets create a red border for the rectangle :
-    
-    if(SDL_SetRenderDrawColor(ren, 255, 0, 0, SDL_ALPHA_OPAQUE) != 0)
-        SDL_ExitWithError("failed to set color");
-
-    if(SDL_RenderDrawRect(ren, &rectangle) != 0)
-        SDL_ExitWithError("failed to draw a full rectangle");
-
-        //lets thick it :
-
-    rectangle.x = 51;
-    rectangle.y = 451;
-    rectangle.w = 178;
-    rectangle.h = 128;
-
-    if(SDL_RenderDrawRect(ren, &rectangle) != 0)
-        SDL_ExitWithError("failed to draw a full rectangle");
     
 
+    color(ren, 30, 58, 200, 255);
+
+    point(ren, 5, 2);
+    point(ren, 5, 3);
+    point(ren, 5, 4);
+    point(ren, 5, 5);
+
+    line(ren, 20, 30, 80, 90);
+    line(ren, 150, 92, 420, 340);
+
+    color(ren, 200, 220, 150, 255);
+
+    rect(ren, 400, 50, 180, 130, 1);
+
+
+    color(ren, 0, 200, 20, SDL_ALPHA_OPAQUE);
+    rect(ren, 50, 450, 180, 130, 1);
+    //lets create a red border for the rectangle :
+    
+    color(ren, 255, 0, 0, SDL_ALPHA_OPAQUE);
+    rect(ren, 50, 450, 180, 130, 0);
+    //lets thick it :
+    rect(ren, 51, 451, 178, 128, 0);
+
+    //lets thick it with the time :
+
+    for(int i = 128 ; i >= 0 ; i--){
+        rect(ren, 51+i, 451+i, 178 -2*i, 128 -2*i, 0);
+        //SDL_Delay(100);//more to learn about delay...
+    }
+    
 
     SDL_RenderPresent(ren);//refresh the render
     SDL_Delay(5000);//waiting delay, in ms
@@ -88,3 +72,36 @@ void SDL_ExitWithError(const char *string){
     SDL_Quit();
     exit(EXIT_FAILURE);
 }
+
+void point(SDL_Renderer* r, int x, int y){
+    if(SDL_RenderDrawPoint(r, x, y) != 0)
+        SDL_ExitWithError("failed to draw point");
+}
+
+void line(SDL_Renderer* r, int x1, int y1, int x2, int y2){
+    if(SDL_RenderDrawLine(r, x1, y1, x2, y2) != 0)//line
+        SDL_ExitWithError("failed to draw line");
+}
+
+void color(SDL_Renderer* r, int red, int green, int blue, int alpha){
+    if(SDL_SetRenderDrawColor(r, red, green, blue, alpha) != 0)
+        SDL_ExitWithError("failed to set color");
+}
+
+void rect(SDL_Renderer* r, int x, int y, int width, int height, int filled){
+    SDL_Rect rectangle;
+    rectangle.x = x;
+    rectangle.y = y;
+    rectangle.w = width;
+    rectangle.h = height;
+
+    if(filled){
+        if(SDL_RenderFillRect(r, &rectangle) != 0)
+            SDL_ExitWithError("failed to draw a full rectangle");
+    }
+    if(!filled){
+        if(SDL_RenderDrawRect(r, &rectangle) != 0)
+            SDL_ExitWithError("failed to draw a full rectangle");
+    }
+}
+
