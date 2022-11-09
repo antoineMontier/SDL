@@ -4,9 +4,10 @@
 
 void SDL_ExitWithError(const char *string);
 void point(SDL_Renderer* r, int x, int y);
+void mark(SDL_Renderer* r, int x, int y, int thickness);
 void line(SDL_Renderer* r, int x1, int y1, int x2, int y2);
 void color(SDL_Renderer* r, int red, int green, int blue, int alpha);
-void rect(SDL_Renderer* r, int x, int y, int width, int height, int filled);
+void rect(SDL_Renderer* r, int x, int y, int height, int width, int filled);
 void circle(SDL_Renderer * r, int centreX, int centreY, int radius);
 void openSDL(int x, int y, int mode, SDL_Window**w, SDL_Renderer**r);
 void closeSDL(SDL_Window**w, SDL_Renderer**r);
@@ -22,32 +23,16 @@ int main(int argc, char *argv[]){//compile with     gcc main.c -o main $(sdl2-co
 
     /*--------------------------------------------------------------------------------*/
     
+    int x1 = 50, x2 = 200, y1 = 50, y2 = 300;
 
-    color(ren, 30, 58, 200, 255);
+    color(ren, 255, 0, 0, 255);
 
-    point(ren, 5, 2);
-    point(ren, 5, 3);
-    point(ren, 5, 4);
-    point(ren, 5, 5);
+    mark(ren, x1, y1, 3);
+    mark(ren, x2, y2, 3);
+  
+    color(ren, 0, 255, 0, 255);
 
-    line(ren, 20, 30, 80, 90);
-    line(ren, 150, 92, 420, 340);
-
-    color(ren, 200, 220, 150, 255);
-
-    rect(ren, 400, 50, 180, 130, 1);
-
-    circle(ren, 50, 100, 200);
-
-
-    color(ren, 0, 200, 20, SDL_ALPHA_OPAQUE);
-    rect(ren, 50, 450, 180, 130, 1);
-    //lets create a red border for the rectangle :
-    
-    color(ren, 255, 0, 0, SDL_ALPHA_OPAQUE);
-    rect(ren, 50, 450, 180, 130, 0);
-    //lets thick it :
-    rect(ren, 51, 451, 178, 128, 0);
+    rect(ren, x1, y1, x2-x1, y2-y1, 0);
     
 
     SDL_RenderPresent(ren);//refresh the render
@@ -66,6 +51,14 @@ void SDL_ExitWithError(const char *string){
     exit(EXIT_FAILURE);
 }
 
+void mark(SDL_Renderer* r, int x, int y, int thickness){
+    for(int a = y - thickness ; a <= y + thickness ; a++){
+        for(int b = x - thickness ; b <= x + thickness; b++){
+            point(r, a, b);
+        }
+    }
+}
+
 void point(SDL_Renderer* r, int x, int y){
     if(SDL_RenderDrawPoint(r, x, y) != 0)
         SDL_ExitWithError("failed to draw point");
@@ -81,7 +74,7 @@ void color(SDL_Renderer* r, int red, int green, int blue, int alpha){
         SDL_ExitWithError("failed to set color");
 }
 
-void rect(SDL_Renderer* r, int x, int y, int width, int height, int filled){
+void rect(SDL_Renderer* r, int x, int y, int height, int width, int filled){
     SDL_Rect rectangle;
     rectangle.x = x;
     rectangle.y = y;
