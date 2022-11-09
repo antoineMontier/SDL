@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define HEIGHT 800
+#define WIDTH 1800
+
 void SDL_ExitWithError(const char *string);
 void point(SDL_Renderer* r, int x, int y);
 void mark(SDL_Renderer* r, int x, int y, int thickness);
@@ -18,28 +21,62 @@ int main(int argc, char *argv[]){//compile with     gcc main.c -o main $(sdl2-co
     SDL_Window *w;//open a window command
     SDL_Renderer *ren;//render creation
 
-    openSDL(600, 800, 0, &w, &ren);
+    openSDL(WIDTH, HEIGHT, 0, &w, &ren);
 
 
     /*--------------------------------------------------------------------------------*/
     
-    int x1 = 50, x2 = 200, y1 = 50, y2 = 300;
+    SDL_Surface*im;
+    SDL_Texture*tx;
 
-    color(ren, 255, 0, 0, 255);
+    im = SDL_LoadBMP("src/mountain.bmp");
 
-    mark(ren, x1, y1, 3);
-    mark(ren, x2, y2, 3);
-  
-    color(ren, 0, 255, 0, 255);
+    if(im == NULL){
+        closeSDL(&w, &ren);
+        SDL_ExitWithError("impossible to load the picture");
+    }
 
-    rect(ren, x1, y1, x2-x1, y2-y1, 0);
-    
+    tx = SDL_CreateTextureFromSurface(ren, im);
+    SDL_FreeSurface(im);
+
+    if(tx == NULL){
+        closeSDL(&w, &ren);
+        SDL_ExitWithError("impossible to create the texture");
+    }
+    //here the texture is created
+
+    //let's load the texture in memory :
+
+    SDL_Rect rectangle;
+
+    if(SDL_QueryTexture(tx, NULL, NULL, &rectangle.w, &rectangle.h) != 0){
+        closeSDL(&w, &ren);
+        SDL_ExitWithError("impossible to load the image");
+    }
+
+    rectangle.x = (WIDTH - rectangle.w)/2; // center the rectangle
+    rectangle.y = (HEIGHT - rectangle.h)/2; // center the rectangle
+
+    //the image is loaded
+
+    //let's display it :
+
+    if(SDL_RenderCopy(ren, tx, NULL, &rectangle) != 0){
+        closeSDL(&w, &ren);
+        SDL_ExitWithError("impossible to display the image");
+    }
+
+
+
+
+
+
 
     SDL_RenderPresent(ren);//refresh the render
     SDL_Delay(5000);//waiting delay, in ms
     /*--------------------------------------------------------------------------------*/
 
-    
+    SDL_DestroyTexture(tx);
     closeSDL(&w, &ren);
     printf("closed successfully !\n");
     return 0;
