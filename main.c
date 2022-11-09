@@ -14,6 +14,7 @@ void rect(SDL_Renderer* r, int x, int y, int height, int width, int filled);
 void circle(SDL_Renderer * r, int centreX, int centreY, int radius);
 void openSDL(int x, int y, int mode, SDL_Window**w, SDL_Renderer**r);
 void closeSDL(SDL_Window**w, SDL_Renderer**r);
+void background(SDL_Renderer* r, int red, int green, int blue);
 
 int main(int argc, char *argv[]){//compile with     gcc main.c -o main $(sdl2-config --cflags --libs)
 
@@ -25,27 +26,33 @@ int main(int argc, char *argv[]){//compile with     gcc main.c -o main $(sdl2-co
 
 
     /*--------------------------------------------------------------------------------*/
-    int pace = 5;
-    int i = 0;
-    for(int y = 0 ; y < HEIGHT ; y += 2*pace){
-    for(int x = 0 ; x < WIDTH ; x += 2*pace){
-        if(i % 3 == 0)
-            color(ren, 255, 0, 0, 255);
-        else if(i % 3 == 1)
-            color(ren, 0, 255, 0, 255);
-        else    
-            color(ren, 0, 0, 255, 255);
-
-        mark(ren, x, y, pace);
-
-        i++;
+ for(int i = 0 ; i < 10 ; i++){
+    int radius = WIDTH/2;
+    while(radius > 0){
+        background(ren, 135, 62, 35);
+        color(ren, 250, 150, 100, 255);
+        circle(ren, WIDTH/2, HEIGHT/2, radius);
+        radius--;
         SDL_RenderPresent(ren);//refresh the render
-        SDL_Delay(1);//waiting delay, in ms
+        SDL_Delay(3);//waiting delay, in ms
     }
+    color(ren, 100, 150, 200, 255);
+    while(radius < WIDTH/2){
+        background(ren, 135, 62, 35);
+        color(ren, 250, 150, 100, 255);
+        circle(ren, WIDTH/2, HEIGHT/2, radius);
+        radius++;
+        SDL_RenderPresent(ren);//refresh the render
+        SDL_Delay(3);//waiting delay, in ms
     }
+ }
+
+
+
+
 
     SDL_RenderPresent(ren);//refresh the render
-    SDL_Delay(5000);//waiting delay, in ms
+    SDL_Delay(1000);//waiting delay, in ms
     /*--------------------------------------------------------------------------------*/
 
     
@@ -151,3 +158,9 @@ void closeSDL(SDL_Window**w, SDL_Renderer**r){
     SDL_DestroyWindow(*w);
     SDL_Quit();
 }
+
+void background(SDL_Renderer* r, int red, int green, int blue){
+    color(r, red, green, blue, 255);
+    rect(r, 0, 0, HEIGHT, WIDTH, 1);
+}
+
