@@ -25,35 +25,96 @@ int main(int argc, char *argv[]){//compile with     gcc main.c -o main $(sdl2-co
     openSDL(WIDTH, HEIGHT, 0, &w, &ren);
 
 
-    /*--------------------------------------------------------------------------------*/
- for(int i = 0 ; i < 10 ; i++){
-    int radius = WIDTH/2;
-    while(radius > 0){
-        background(ren, 135, 62, 35);
-        color(ren, 250, 150, 100, 255);
-        circle(ren, WIDTH/2, HEIGHT/2, radius);
-        radius--;
+    /*----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    SDL_bool program_launched = SDL_TRUE; //SDL_FALSE or SDL_TRUE
+    SDL_bool circ = SDL_FALSE;
+    SDL_bool rectangle = SDL_FALSE;
+
+
+    while(program_launched){//principal loop
+        SDL_Event evt;
+        printf("r : %d\tc : %d\n", rectangle, circ);
+
+            background(ren, 0, 0, 0);
+
+        if(circ){
+            color(ren, 255, 0, 0, 255);
+            circle(ren, WIDTH/2, HEIGHT/2, WIDTH/4);
+        }
+       
+
+
+
+        if(rectangle){
+            color(ren, 0, 255, 0, 255);
+            rect(ren, 25, 25, WIDTH/4, HEIGHT/4, 0);
+        }
+
+    
+
+
+
         SDL_RenderPresent(ren);//refresh the render
-        SDL_Delay(3);//waiting delay, in ms
+
+
+
+        while(SDL_PollEvent(&evt)){//reads all the events (mouse moving, key pressed...)        //possible to wait for an event with SDL_WaitEvent
+            switch(evt.type){
+
+                case SDL_QUIT:
+                    program_launched = SDL_FALSE;//quit the program if the user closes the window
+                    break;
+
+                case SDL_KEYDOWN:                   //SDL_KEYDOWN : hold a key            SDL_KEYUP : release a key
+                    switch (evt.key.keysym.sym){//returns the key ('0' ; 'e' ; 'SPACE'...)
+
+                        case SDLK_c: //key 'c'
+                            printf("c\n");
+                            if(circ)
+                                circ = SDL_FALSE;
+                            else
+                                circ = SDL_TRUE;
+                            break;  
+
+                        case SDLK_r: //key 'r'
+                            printf("r\n");
+                            if(rectangle)
+                                rectangle = SDL_FALSE;
+                            else
+                                rectangle = SDL_TRUE;
+                            break;
+
+
+
+                        default:
+                            break;
+                    }
+
+
+
+                default:
+                    break; 
+
+            }
+        }
+
+        
+
+    
+        
+
+
+    
+
+
     }
-    color(ren, 100, 150, 200, 255);
-    while(radius < WIDTH/2){
-        background(ren, 135, 62, 35);
-        color(ren, 250, 150, 100, 255);
-        circle(ren, WIDTH/2, HEIGHT/2, radius);
-        radius++;
-        SDL_RenderPresent(ren);//refresh the render
-        SDL_Delay(3);//waiting delay, in ms
-    }
- }
 
 
 
 
-
-    SDL_RenderPresent(ren);//refresh the render
-    SDL_Delay(1000);//waiting delay, in ms
-    /*--------------------------------------------------------------------------------*/
+    /*SDL_RenderPresent(ren);//refresh the render
+    SDL_Delay(5000);//waiting delay, in ms*/
+    /*----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
     
     closeSDL(&w, &ren);
