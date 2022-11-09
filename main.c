@@ -7,19 +7,18 @@ void point(SDL_Renderer* r, int x, int y);
 void line(SDL_Renderer* r, int x1, int y1, int x2, int y2);
 void color(SDL_Renderer* r, int red, int green, int blue, int alpha);
 void rect(SDL_Renderer* r, int x, int y, int width, int height, int filled);
+void circle(SDL_Renderer * r, int centreX, int centreY, int radius);
+void openSDL(int x, int y, int mode, SDL_Window**w, SDL_Renderer**r);
+void closeSDL(SDL_Window**w, SDL_Renderer**r);
 
 int main(int argc, char *argv[]){//compile with     gcc main.c -o main $(sdl2-config --cflags --libs)
 
-    if(0 != SDL_Init(/*flag*/ SDL_INIT_VIDEO))//lots of flags like SDL_INIT_AUDIO ; *_VIDEO ; *_EVERYTHING... To separe with '|'
-        SDL_ExitWithError("Initialisation SDL");
-    //at this point, the SDL is well initialised, we can afford it because of the if
 
     SDL_Window *w;//open a window command
     SDL_Renderer *ren;//render creation
 
+    openSDL(600, 800, 0, &w, &ren);
 
-    if(SDL_CreateWindowAndRenderer(800, 600, 0, &w, &ren) !=0)
-        SDL_ExitWithError("window and render creation failed");
 
     /*--------------------------------------------------------------------------------*/
     
@@ -38,6 +37,8 @@ int main(int argc, char *argv[]){//compile with     gcc main.c -o main $(sdl2-co
 
     rect(ren, 400, 50, 180, 130, 1);
 
+    circle(ren, 50, 100, 200);
+
 
     color(ren, 0, 200, 20, SDL_ALPHA_OPAQUE);
     rect(ren, 50, 450, 180, 130, 1);
@@ -47,23 +48,15 @@ int main(int argc, char *argv[]){//compile with     gcc main.c -o main $(sdl2-co
     rect(ren, 50, 450, 180, 130, 0);
     //lets thick it :
     rect(ren, 51, 451, 178, 128, 0);
-
-    //lets thick it with the time :
-
-    for(int i = 128 ; i >= 0 ; i--){
-        rect(ren, 51+i, 451+i, 178 -2*i, 128 -2*i, 0);
-        //SDL_Delay(100);//more to learn about delay...
-    }
     
 
     SDL_RenderPresent(ren);//refresh the render
     SDL_Delay(5000);//waiting delay, in ms
     /*--------------------------------------------------------------------------------*/
 
-    SDL_DestroyRenderer(ren);
-    SDL_DestroyWindow(w);
-    SDL_Quit();
-
+    
+    closeSDL(&w, &ren);
+    printf("closed successfully !\n");
     return 0;
 }
 
@@ -104,4 +97,57 @@ void rect(SDL_Renderer* r, int x, int y, int width, int height, int filled){
             SDL_ExitWithError("failed to draw a full rectangle");
     }
 }
+
+void circle(SDL_Renderer * r, int cx, int cy, int radius){
+   const int diameter = (radius * 2);
+
+   int x = (radius - 1);
+   int y = 0;
+   int tx = 1;
+   int ty = 1;
+   int error = (tx - diameter);
+
+   while (x >= y){
+      //  Each of the following renders an octant of the circle
+      SDL_RenderDrawPoint(r, cx + x, cy - y);
+      SDL_RenderDrawPoint(r, cx + x, cy + y);
+      SDL_RenderDrawPoint(r, cx - x, cy - y);
+      SDL_RenderDrawPoint(r, cx - x, cy + y);
+      SDL_RenderDrawPoint(r, cx + y, cy - x);
+      SDL_RenderDrawPoint(r, cx + y, cy + x);
+      SDL_RenderDrawPoint(r, cx - y, cy - x);
+      SDL_RenderDrawPoint(r, cx - y, cy + x);
+
+      if (error <= 0){
+         ++y;
+         error += ty;
+         ty += 2;
+      }
+
+      if (error > 0){
+         --x;
+         tx += 2;
+         error += (tx - diameter);
+      }
+   }
+}
+
+void openSDL(int x, int y, int mode, SDL_Window**w, SDL_Renderer**r){
+
+    if(0 != SDL_Init(/*flag*/ SDL_INIT_VIDEO))//lots of flags like SDL_INIT_AUDIO ; *_VIDEO ; *_EVERYTHING... To separe with '|'
+        SDL_ExitWithError("Initialisation SDL failed");
+    //at this point, the SDL is well initialised, we can afford it because of the if
+
+
+    if(SDL_CreateWindowAndRenderer(x, y, mode, w, r) !=0)
+        SDL_ExitWithError("window and render creation failed");
+
+}
+
+void closeSDL(SDL_Window**w, SDL_Renderer**r){
+    SDL_DestroyRenderer(*r);
+    SDL_DestroyWindow(*w);
+    SDL_Quit();
+}
+
 
