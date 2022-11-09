@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define WIDTH 600
 #define HEIGHT 800
-#define WIDTH 1800
 
 void SDL_ExitWithError(const char *string);
 void point(SDL_Renderer* r, int x, int y);
@@ -25,58 +25,30 @@ int main(int argc, char *argv[]){//compile with     gcc main.c -o main $(sdl2-co
 
 
     /*--------------------------------------------------------------------------------*/
-    
-    SDL_Surface*im;
-    SDL_Texture*tx;
+    int pace = 5;
+    int i = 0;
+    for(int y = 0 ; y < HEIGHT ; y += 2*pace){
+    for(int x = 0 ; x < WIDTH ; x += 2*pace){
+        if(i % 3 == 0)
+            color(ren, 255, 0, 0, 255);
+        else if(i % 3 == 1)
+            color(ren, 0, 255, 0, 255);
+        else    
+            color(ren, 0, 0, 255, 255);
 
-    im = SDL_LoadBMP("src/mountain.bmp");
+        mark(ren, x, y, pace);
 
-    if(im == NULL){
-        closeSDL(&w, &ren);
-        SDL_ExitWithError("impossible to load the picture");
+        i++;
+        SDL_RenderPresent(ren);//refresh the render
+        SDL_Delay(1);//waiting delay, in ms
     }
-
-    tx = SDL_CreateTextureFromSurface(ren, im);
-    SDL_FreeSurface(im);
-
-    if(tx == NULL){
-        closeSDL(&w, &ren);
-        SDL_ExitWithError("impossible to create the texture");
     }
-    //here the texture is created
-
-    //let's load the texture in memory :
-
-    SDL_Rect rectangle;
-
-    if(SDL_QueryTexture(tx, NULL, NULL, &rectangle.w, &rectangle.h) != 0){
-        closeSDL(&w, &ren);
-        SDL_ExitWithError("impossible to load the image");
-    }
-
-    rectangle.x = (WIDTH - rectangle.w)/2; // center the rectangle
-    rectangle.y = (HEIGHT - rectangle.h)/2; // center the rectangle
-
-    //the image is loaded
-
-    //let's display it :
-
-    if(SDL_RenderCopy(ren, tx, NULL, &rectangle) != 0){
-        closeSDL(&w, &ren);
-        SDL_ExitWithError("impossible to display the image");
-    }
-
-
-
-
-
-
 
     SDL_RenderPresent(ren);//refresh the render
     SDL_Delay(5000);//waiting delay, in ms
     /*--------------------------------------------------------------------------------*/
 
-    SDL_DestroyTexture(tx);
+    
     closeSDL(&w, &ren);
     printf("closed successfully !\n");
     return 0;
@@ -91,7 +63,7 @@ void SDL_ExitWithError(const char *string){
 void mark(SDL_Renderer* r, int x, int y, int thickness){
     for(int a = y - thickness ; a <= y + thickness ; a++){
         for(int b = x - thickness ; b <= x + thickness; b++){
-            point(r, a, b);
+            point(r, b, a);
         }
     }
 }
@@ -179,5 +151,3 @@ void closeSDL(SDL_Window**w, SDL_Renderer**r){
     SDL_DestroyWindow(*w);
     SDL_Quit();
 }
-
-
