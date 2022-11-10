@@ -69,19 +69,15 @@ int main(int argc, char *argv[]){//compile with     gcc main.c -o main $(sdl2-co
                     switch (evt.key.keysym.sym){//returns the key ('0' ; 'e' ; 'SPACE'...)
 
                         case SDLK_c: //key 'c'
-                            printf("c\n");
-                            if(circ)
-                                circ = SDL_FALSE;
-                            else
-                                circ = SDL_TRUE;
+                            circ = !circ;
                             break;  
 
                         case SDLK_r: //key 'r'
-                            printf("r\n");
-                            if(rectangle)
-                                rectangle = SDL_FALSE;
-                            else
-                                rectangle = SDL_TRUE;
+                            rectangle = !rectangle;
+                            break;
+
+                        case SDLK_ESCAPE:
+                            program_launched = SDL_FALSE;//escape the program by pressing esc
                             break;
 
 
