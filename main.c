@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #define WIDTH 600
 #define HEIGHT 800
@@ -11,10 +12,22 @@ void mark(SDL_Renderer* r, int x, int y, int thickness);
 void line(SDL_Renderer* r, int x1, int y1, int x2, int y2);
 void color(SDL_Renderer* r, int red, int green, int blue, int alpha);
 void rect(SDL_Renderer* r, int x, int y, int height, int width, int filled);
-void circle(SDL_Renderer * r, int centreX, int centreY, int radius);
+void circle(SDL_Renderer * r, int centreX, int centreY, int radius, int filled);
 void openSDL(int x, int y, int mode, SDL_Window**w, SDL_Renderer**r);
 void closeSDL(SDL_Window**w, SDL_Renderer**r);
 void background(SDL_Renderer* r, int red, int green, int blue);
+void triangle(SDL_Renderer* r, int x1, int y1, int x2, int y2, int x3, int y3, int filled);
+double dist(double x1, double y1, double x2, double y2);
+int inTheTriangle(double x1, double y1, double x2, double y2, double x3, double y3, double a, double b);
+double min(double a, double b, double c);
+double max(double a, double b, double c);
+void triangle(SDL_Renderer* r, int x1, int y1, int x2, int y2, int x3, int y3, int filled);
+
+
+
+
+
+
 
 int main(int argc, char *argv[]){//compile with     gcc main.c -o main $(sdl2-config --cflags --libs)
 
@@ -33,22 +46,15 @@ int main(int argc, char *argv[]){//compile with     gcc main.c -o main $(sdl2-co
 
     while(program_launched){//principal loop
         SDL_Event evt;
-        printf("r : %d\tc : %d\n", rectangle, circ);
 
             background(ren, 0, 0, 0);
 
-        if(circ){
+    
             color(ren, 255, 0, 0, 255);
-            circle(ren, WIDTH/2, HEIGHT/2, WIDTH/4);
-        }
-       
 
+            triangle(ren, 150, 150, 150, 250, 300, 275, 1);
 
-
-        if(rectangle){
-            color(ren, 0, 255, 0, 255);
-            rect(ren, 25, 25, WIDTH/4, HEIGHT/4, 0);
-        }
+            circle(ren, 300, 300, 50, 1);
 
     
 
@@ -67,14 +73,6 @@ int main(int argc, char *argv[]){//compile with     gcc main.c -o main $(sdl2-co
 
                 case SDL_KEYDOWN:                   //SDL_KEYDOWN : hold a key            SDL_KEYUP : release a key
                     switch (evt.key.keysym.sym){//returns the key ('0' ; 'e' ; 'SPACE'...)
-
-                        case SDLK_c: //key 'c'
-                            circ = !circ;
-                            break;  
-
-                        case SDLK_r: //key 'r'
-                            rectangle = !rectangle;
-                            break;
 
                         case SDLK_ESCAPE:
                             program_launched = SDL_FALSE;//escape the program by pressing esc
@@ -164,7 +162,7 @@ void rect(SDL_Renderer* r, int x, int y, int height, int width, int filled){
     }
 }
 
-void circle(SDL_Renderer * r, int cx, int cy, int radius){
+void circle(SDL_Renderer * r, int cx, int cy, int radius, int filled){
    const int diameter = (radius * 2);
 
    int x = (radius - 1);
@@ -196,6 +194,21 @@ void circle(SDL_Renderer * r, int cx, int cy, int radius){
          error += (tx - diameter);
       }
    }
+
+    if(filled){
+        int s_x = cx - radius;
+        int s_y = cy - radius;
+        int f_x = cx + radius;
+        int f_y = cy + radius;
+
+        for(int a = s_x ; a <= f_x ; a++){
+            for(int b = s_y ; b <= f_y ; b++){
+                if(dist(cx, cy, a, b) < radius)
+                    point(r, a, b);
+            }
+        }
+    }
+
 }
 
 void openSDL(int x, int y, int mode, SDL_Window**w, SDL_Renderer**r){
@@ -221,3 +234,60 @@ void background(SDL_Renderer* r, int red, int green, int blue){
     rect(r, 0, 0, HEIGHT, WIDTH, 1);
 }
 
+double dist(double x1, double y1, double x2, double y2){
+    return sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+}
+
+int inTheTriangle(double x1, double y1, double x2, double y2, double x3, double y3, double a, double b){
+    int sign1 = -1, sign2 = -1, sign3 = -1;
+    if(((x2-x1)*(b-y1) - (y2-y1)*(a-x1)) >= 0)
+        sign1 = 1;
+
+    if(((x3-x2)*(b-y2) - (y3-y2)*(a-x2)) >= 0)
+        sign2 = 1;
+
+    if(((x1-x3)*(b-y3) - (a-x3)*(y1-y3)) >= 0)
+        sign3 = 1;
+
+    if(sign1 == sign2 && sign2 == sign3)
+        return 1;
+    return 0;
+}
+
+double min(double a, double b, double c){
+    if(a < b && a < c)
+        return a;
+    if(b < a && b < c)
+        return b;
+    if(c < a && c < b)
+        return c;
+}
+
+double max(double a, double b, double c){
+    if(a > b && a > c)
+        return a;
+    if(b > a && b > c)
+        return b;
+    if(c > a && c > b)
+        return c;
+}
+
+void triangle(SDL_Renderer* r, int x1, int y1, int x2, int y2, int x3, int y3, int filled){
+    line(r, x1, y1, x2, y2);
+    line(r, x2, y2, x3, y3);
+    line(r, x3, y3, x1, x1);
+    if(filled){
+
+        int s_x = min(x1, x2, x3);
+        int s_y = min(y1, y2, y3);
+        int f_x = max(x1, x2, x3);
+        int f_y = max(y1, y2, y3);
+
+        for(int a = s_x ; a <= f_x ; a++){
+            for(int b = s_y ; b <= f_y ; b++){
+                if(inTheTriangle(x1, y1, x2, y2, x3, y3, a, b))
+                    point(r, a, b);
+            }
+        }
+    }
+}
