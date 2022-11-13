@@ -54,13 +54,15 @@ int main(int argc, char *argv[]){//compile with     gcc main.c -o main $(sdl2-co
             //rect(ren, 100, 100, 50, 120, 0, 0);
            // mark(ren, 100, 100, 2);
            // mark(ren, 150, 220, 2);
+            circle(ren, 200, 600, 80, 1);
+
 
             color(ren, 0, 255, 0, 255);//green
             rect(ren, 300, 300, 200, 100, 1, 20);
             //rect(ren, 300, 300, 200, 100, 0, 0);
             //mark(ren, 300, 300, 2);
             //mark(ren, 500, 400, 2);
-
+            circle(ren, 150, 500, 50, 0);
 
         SDL_RenderPresent(ren);//refresh the render
 
@@ -273,51 +275,19 @@ void rect(SDL_Renderer* r, int x, int y, int width, int height, int filled, int 
 }
 
 void circle(SDL_Renderer * r, int cx, int cy, int radius, int filled){
-   const int diameter = (radius * 2);
-
-   int x = (radius - 1);
-   int y = 0;
-   int tx = 1;
-   int ty = 1;
-   int error = (tx - diameter);
-
-   while (x >= y){
-      //  Each of the following renders an octant of the circle
-      SDL_RenderDrawPoint(r, cx + x, cy - y);
-      SDL_RenderDrawPoint(r, cx + x, cy + y);
-      SDL_RenderDrawPoint(r, cx - x, cy - y);
-      SDL_RenderDrawPoint(r, cx - x, cy + y);
-      SDL_RenderDrawPoint(r, cx + y, cy - x);
-      SDL_RenderDrawPoint(r, cx + y, cy + x);
-      SDL_RenderDrawPoint(r, cx - y, cy - x);
-      SDL_RenderDrawPoint(r, cx - y, cy + x);
-
-      if (error <= 0){
-         ++y;
-         error += ty;
-         ty += 2;
-      }
-
-      if (error > 0){
-         --x;
-         tx += 2;
-         error += (tx - diameter);
-      }
-   }
-
-    if(filled){
-        int s_x = cx - radius;
-        int s_y = cy - radius;
-        int f_x = cx + radius;
-        int f_y = cy + radius;
-
-        for(int a = s_x ; a <= f_x ; a++){
-            for(int b = s_y ; b <= f_y ; b++){
-                if(dist(cx, cy, a, b) < radius)
+    double precision = 0.5;
+    for(int a = cx - radius; a <= cx + radius ; a++){
+        for(int b = cy-radius ; b <= cy+radius ; b++){
+            if(filled){
+                if(dist(a, b, cx, cy) <= radius)
+                    point(r, a, b);
+            }else{
+                if(dist(a, b, cx, cy) <= radius + precision && dist(a, b, cx, cy) >= radius - precision)
                     point(r, a, b);
             }
         }
     }
+   
 
 }
 
