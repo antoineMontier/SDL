@@ -11,7 +11,7 @@ void point(SDL_Renderer* r, int x, int y);
 void mark(SDL_Renderer* r, int x, int y, int thickness);
 void line(SDL_Renderer* r, int x1, int y1, int x2, int y2);
 void color(SDL_Renderer* r, int red, int green, int blue, int alpha);
-void rect(SDL_Renderer* r, int x, int y, int height, int width, int filled);
+void rect(SDL_Renderer* r, int x, int y, int width, int height, int filled, int curve);
 void circle(SDL_Renderer * r, int centreX, int centreY, int radius, int filled);
 void openSDL(int x, int y, int mode, SDL_Window**w, SDL_Renderer**r);
 void closeSDL(SDL_Window**w, SDL_Renderer**r);
@@ -46,17 +46,20 @@ int main(int argc, char *argv[]){//compile with     gcc main.c -o main $(sdl2-co
     while(program_launched){//principal loop
         SDL_Event evt;
 
-            background(ren, 0, 0, 0);
+            //background(ren, 128, 64, 0);
 
     
-            color(ren, 255, 0, 0, 255);
+            color(ren, 255, 0, 0, 255);//red
+            rect(ren, 100, 100, 50, 120, 1, 20);
+            //rect(ren, 100, 100, 50, 120, 0, 0);
+           // mark(ren, 100, 100, 2);
+           // mark(ren, 150, 220, 2);
 
-            triangle(ren, 150, 150, 150, 250, 300, 275, 1);
-
-            circle(ren, 300, 300, 50, 1);
-
-    
-
+            color(ren, 0, 255, 0, 255);//green
+            rect(ren, 300, 300, 200, 100, 1, 20);
+            //rect(ren, 300, 300, 200, 100, 0, 0);
+            //mark(ren, 300, 300, 2);
+            //mark(ren, 500, 400, 2);
 
 
         SDL_RenderPresent(ren);//refresh the render
@@ -144,21 +147,129 @@ void color(SDL_Renderer* r, int red, int green, int blue, int alpha){
         SDL_ExitWithError("failed to set color");
 }
 
-void rect(SDL_Renderer* r, int x, int y, int height, int width, int filled){
-    SDL_Rect rectangle;
-    rectangle.x = x;
-    rectangle.y = y;
-    rectangle.w = width;
-    rectangle.h = height;
-
+void rect(SDL_Renderer* r, int x, int y, int width, int height, int filled, int curve){
+    if(curve <= 0){
+        if(filled){
+            int a = x, b = y;
+            for(int a = x ; a <= x + width ; a++){
+                for(int b = y ; b <= y + height ; b++){
+                    SDL_RenderDrawPoint(r, a, b);
+                }
+            }
+            return;
+        }else{
+            line(r, x, y, x + width, y);
+            line(r, x, y, x, y + height);
+            line(r, x + width, y + height, x + width, y);
+            line(r, x + width, y + height, x , y + height);
+            return;
+        }
+    }
+    int smaller = 1;// = -1 if it's height ; 1 if it's width or equal
+    if(width > height){
+        smaller =-1;
+    }
+    if(curve >= width/2 || curve >= height/2){//if curve is at its max value
+        curve = min(width/2, height/2, height);
+    }
+    //here curve is between 1 and it's max :
     if(filled){
-        if(SDL_RenderFillRect(r, &rectangle) != 0)
-            SDL_ExitWithError("failed to draw a full rectangle");
+        if(smaller == -1){//long rectangle
+            //draw the middle part :
+            rect(r, x + curve, y, width - 2*curve, height, 1, 0);
+            //fill the left gap :
+            rect(r, x, y + curve, curve, height - curve*2, 1, 0);
+            //fill the right gap
+            rect(r, x + width - curve, y + curve, curve, height - 2*curve, 1, 0);
+
+            //fill the top left :
+            for(int a = x ; a <= x + curve ; a++){
+                for(int b = y ; b <= y + curve ; b++){
+                    if(dist(a, b, x + curve, y+ curve) <= curve)
+                        point(r, a, b);
+                }
+            }
+
+            //fill the top right :
+            for(int a = x + width - curve; a <= x + width ; a++){
+                for(int b = y ; b <= y + curve ; b++){
+                    if(dist(a, b, x + width -curve, y + curve) <= curve)
+                        point(r, a, b);
+                }
+            }
+
+            //fill the bottom right :
+            for(int a = x + width - curve; a <= x + width ; a++){
+                for(int b = y + height - curve ; b <= y + height ; b++){
+                    if(dist(a, b, x + width -curve, y +height- curve) <= curve)
+                        point(r, a, b);
+                }
+            }
+
+
+            //fill the bottom left :
+            for(int a = x ; a <= x + curve ; a++){
+                for(int b = y + height - curve; b <= y + height ; b++){
+                    if(dist(a, b, x +  curve, y + height - curve) <= curve)
+                        point(r, a, b);
+                }
+            }
+
+
+
+        }else if(smaller == 1){//high rectangle
+            //draw the middle part :
+            rect(r, x, y + curve, width, height - curve*2, 1, 0);
+            //fill the upper gap :
+            rect(r, x + curve, y, width - 2* curve, curve, 1, 0);
+            //fill the bottom gap :
+            rect(r, x + curve, y + height - curve, width - 2* curve, curve, 1, 0);
+
+            //fill the top left :
+            for(int a = x ; a <= x + curve ; a++){
+                for(int b = y ; b <= y + curve ; b++){
+                    if(dist(a, b, x + curve, y+ curve) <= curve)
+                        point(r, a, b);
+                }
+            }
+
+            //fill the top right :
+            for(int a = x + width - curve; a <= x + width ; a++){
+                for(int b = y ; b <= y + curve ; b++){
+                    if(dist(a, b, x + width -curve, y + curve) <= curve)
+                        point(r, a, b);
+                }
+            }
+
+            //fill the bottom right :
+            for(int a = x + width - curve; a <= x + width ; a++){
+                for(int b = y + height - curve ; b <= y + height ; b++){
+                    if(dist(a, b, x + width -curve, y +height- curve) <= curve)
+                        point(r, a, b);
+                }
+            }
+
+
+            //fill the bottom left :
+            for(int a = x ; a <= x + curve ; a++){
+                for(int b = y + height - curve; b <= y + height ; b++){
+                    if(dist(a, b, x +  curve, y + height - curve) <= curve)
+                        point(r, a, b);
+                }
+            }
+
+
+
+        }
+
+
+
+
+
+
+
     }
-    if(!filled){
-        if(SDL_RenderDrawRect(r, &rectangle) != 0)
-            SDL_ExitWithError("failed to draw a full rectangle");
-    }
+
 }
 
 void circle(SDL_Renderer * r, int cx, int cy, int radius, int filled){
@@ -230,7 +341,7 @@ void closeSDL(SDL_Window**w, SDL_Renderer**r){
 
 void background(SDL_Renderer* r, int red, int green, int blue){
     color(r, red, green, blue, 255);
-    rect(r, 0, 0, HEIGHT, WIDTH, 1);
+    rect(r, 0, 0, HEIGHT, WIDTH, 1, 0);
 }
 
 double dist(double x1, double y1, double x2, double y2){
