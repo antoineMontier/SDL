@@ -12,6 +12,7 @@ void mark(SDL_Renderer* r, int x, int y, int thickness);
 void line(SDL_Renderer* r, int x1, int y1, int x2, int y2);
 void color(SDL_Renderer* r, int red, int green, int blue, int alpha);
 void rect(SDL_Renderer* r, int x, int y, int width, int height, int filled, int curve);
+void rect(SDL_Renderer* r, int x, int y, int width, int height, int filled, int curve);
 void circle(SDL_Renderer * r, int centreX, int centreY, int radius, int filled);
 void openSDL(int x, int y, int mode, SDL_Window**w, SDL_Renderer**r);
 void closeSDL(SDL_Window**w, SDL_Renderer**r);
@@ -61,6 +62,7 @@ int main(int argc, char *argv[]){//compile with     gcc main.c -o main $(sdl2-co
 
             color(ren, 0, 255, 0, 255);//green
             rect(ren, 300, 300, 200, 100, 1, 20);
+            rect(ren, 100, 300, 80, 40, 0, 10);
             //rect(ren, 300, 300, 200, 100, 0, 0);
             //mark(ren, 300, 300, 2);
             //mark(ren, 500, 400, 2);
@@ -224,7 +226,45 @@ void rect(SDL_Renderer* r, int x, int y, int width, int height, int filled, int 
 
     }else if(filled == 0){
         if(smaller == -1){//long rectangle
-         
+            //draw the middle part :
+            line(r, x + curve, y, x + width - curve, y);//top
+            line(r, x + curve, y + height, x + width - curve, y + height);//bottom
+            line(r, x, y+ curve, x, y + height - curve);//left
+            line(r, x + width, y+ curve, x + width, y + height - curve);//right
+
+            double precision = 0.5;
+
+            //top left
+            for(int a = x ; a <= x + curve ; a++){
+                for(int b = y ; b <= y + curve ; b++){
+                    if(dist(a, b, x + curve, y+curve) <= curve + precision && dist(a, b, x + curve, y+curve) >= curve - precision)
+                        point(r, a, b);
+                }
+            }
+
+            //bottom left
+            for(int a = x ; a <= x + curve ; a++){
+                for(int b = y + height - curve; b <= y + height ; b++){
+                    if(dist(a, b, x + curve, y+ height - curve) <= curve + precision && dist(a, b, x + curve, y+height - curve) >= curve - precision)
+                        point(r, a, b);
+                }
+            }
+
+            //top right
+            for(int a = x + width - curve ; a <= x + width ; a++){
+                for(int b = y ; b <= y + curve ; b++){
+                    if(dist(a, b, x + width - curve, y+curve) <= curve + precision && dist(a, b, x + width - curve, y+curve) >= curve - precision)
+                        point(r, a, b);
+                }
+            }
+
+            //top left
+            for(int a = x + width - curve ; a <= x + width ; a++){
+                for(int b = y + height - curve; b <= y + height ; b++){
+                    if(dist(a, b, x + width - curve, y+height-curve) <= curve + precision && dist(a, b, x + width - curve, y+height-curve) >= curve - precision)
+                        point(r, a, b);
+                }
+            }
 
 
 
