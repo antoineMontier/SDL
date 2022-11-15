@@ -23,6 +23,7 @@ double max(double a, double b, double c);
 void triangle(SDL_Renderer* r, int x1, int y1, int x2, int y2, int x3, int y3, int filled);
 void get_text_and_rect(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect, int r, int g, int b) ;
 void setFont(TTF_Font**font, char*font_file, int size);
+void text(SDL_Renderer*r, int x, int y, char*text, TTF_Font*font, int red, int green, int blue);
 
 
 
@@ -46,8 +47,7 @@ int main(int argc, char **argv) {
 
     setFont(&font, "a.ttf", 28);
 
-    get_text_and_rect(renderer, 0, 0, "hello", font, &texture1, &rect1, 255, 0, 255);
-    get_text_and_rect(renderer, 0, rect1.y + rect1.h, "world", font, &texture2, &rect2, 0, 255, 0);
+
 
 
     while (Program_launched) {
@@ -56,12 +56,9 @@ int main(int argc, char **argv) {
                 Program_launched = 0;
             }
         }
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-        SDL_RenderClear(renderer);
+        //SDL_RenderClear(renderer);
 
-        /* Use TTF textures. */
-        SDL_RenderCopy(renderer, texture1, NULL, &rect1);
-        SDL_RenderCopy(renderer, texture2, NULL, &rect2);
+        text(renderer, 50, 80, "testtttt", font, 255, 0, 0);
 
         SDL_RenderPresent(renderer);
     }
@@ -397,6 +394,24 @@ void setFont(TTF_Font**font, char*font_file, int size){
     }
 }
 
+void text(SDL_Renderer*r, int x, int y, char*text, TTF_Font*font, int red, int green, int blue){
+    int text_width;
+    int text_height;
+    SDL_Surface *surface;
+    SDL_Texture *texture;
+    SDL_Color textColor = {red, green, blue, 0};
 
+    surface = TTF_RenderText_Blended(font, text, textColor);
+    texture = SDL_CreateTextureFromSurface(r, surface);
+    text_width = surface->w;
+    text_height = surface->h;
+    SDL_FreeSurface(surface);
+    SDL_Rect rectangle;
+    rectangle.x = x;
+    rectangle.y = y;
+    rectangle.w = text_width;
+    rectangle.h = text_height;
+    SDL_RenderCopy(r, texture, NULL, &rectangle);
+}
 
 
