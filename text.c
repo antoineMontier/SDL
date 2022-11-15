@@ -21,7 +21,7 @@ int inTheTriangle(double x1, double y1, double x2, double y2, double x3, double 
 double min(double a, double b, double c);
 double max(double a, double b, double c);
 void triangle(SDL_Renderer* r, int x1, int y1, int x2, int y2, int x3, int y3, int filled);
-void get_text_and_rect(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) ;
+void get_text_and_rect(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect, int r, int g, int b) ;
 void setFont(TTF_Font**font, char*font_file, int size);
 
 
@@ -46,8 +46,8 @@ int main(int argc, char **argv) {
 
     setFont(&font, "a.ttf", 28);
 
-    get_text_and_rect(renderer, 0, 0, "hello", font, &texture1, &rect1);
-    get_text_and_rect(renderer, 0, rect1.y + rect1.h, "world", font, &texture2, &rect2);
+    get_text_and_rect(renderer, 0, 0, "hello", font, &texture1, &rect1, 255, 0, 255);
+    get_text_and_rect(renderer, 0, rect1.y + rect1.h, "world", font, &texture2, &rect2, 0, 255, 0);
 
 
     while (Program_launched) {
@@ -372,13 +372,13 @@ void triangle(SDL_Renderer* r, int x1, int y1, int x2, int y2, int x3, int y3, i
     }
 }
 
-void get_text_and_rect(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
+void get_text_and_rect(SDL_Renderer *renderer, int x, int y, char *text, TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect, int r, int g, int b) {
     int text_width;
     int text_height;
     SDL_Surface *surface;
-    SDL_Color textColor = {255, 255, 255, 0};
+    SDL_Color textColor = {r, g, b, 0};
 
-    surface = TTF_RenderText_Solid(font, text, textColor);
+    surface = TTF_RenderText_Blended(font, text, textColor);
     *texture = SDL_CreateTextureFromSurface(renderer, surface);
     text_width = surface->w;
     text_height = surface->h;
