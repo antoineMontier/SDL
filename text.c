@@ -1,117 +1,78 @@
-#include <stdio.h>
 #include <stdlib.h>
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
+#define WIDTH 480
+#define HEIGHT 480
 
-#define HEIGHT 720
-#define WIDTH 1080
+/*
+- x, y: upper left corner.
+- texture, rect: outputs.
+*/
+void get_text_and_rect(SDL_Renderer *renderer, int x, int y, char *text,
+        TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
+    int text_width;
+    int text_height;
+    SDL_Surface *surface;
+    SDL_Color textColor = {255, 255, 255, 0};
 
-void SDL_ExitWithError(const char *string);
-
-int main(int argc, char *argv[]){//compile with     gcc text.c -o text -lm -lSDL2_ttf $(sdl2-config --cflags --libs) && ./text
-    printf("\n\n");
-    SDL_Window *w;//open a window command
-    printf("window opened ...\n");
-
-    SDL_Renderer *ren;//render creation
-    printf("renderer opened ...\n");
-
-    if(TTF_Init() != 0)
-        SDL_ExitWithError("Initialisation TTF failed");
-    else
-        printf("TTF opened...\n");
-
-    TTF_Font* font;
-    printf("font opened...\n");
-
-    font = TTF_OpenFont("Roboto-Regular.ttf", 20);
-    if(font != 0)
-        printf("font assigned...\n");
-    else
-        SDL_ExitWithError("Initialisation font failed");
-
-    if(0 != SDL_Init(/*flag*/ SDL_INIT_VIDEO))//lots of flags like SDL_INIT_AUDIO ; *_VIDEO ; *_EVERYTHING... To separe with '|'
-        SDL_ExitWithError("Initialisation SDL failed");
-    else
-        printf("SDL openned...\n");
-    //at this point, the SDL is well initialised, we can afford it because of the if
-
-
-    if(SDL_CreateWindowAndRenderer(WIDTH, HEIGHT, 0, &w, &ren) !=0)
-        SDL_ExitWithError("window and render creation failed\n");
-    else    
-        printf("renderer and window created...\n");
-
-//===================================================================================================================================================
-    
-
-
-        SDL_Color c = {255, 0, 0};//red
-        printf("color assigned..\n");
-
-
-        SDL_Surface* surface = TTF_RenderText_Solid(font, "Hello world !", c);
-        if(surface == NULL)
-            SDL_ExitWithError("Initialisation surface failed");
-
-
-
-
-
-
-
-
-
-
-
-    //////////////////////////////////////////////
-    SDL_RenderPresent(ren);
-    printf("renderer refreshed...\n");
-    SDL_Delay(1000);    
-    printf("1000 ms waited...\n");
-    //////////////////////////////////////////////
-
-
-
-
-//===================================================================================================================================================
-
-
+    surface = TTF_RenderText_Solid(font, text, textColor);
+    *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    text_width = surface->w;
+    text_height = surface->h;
     SDL_FreeSurface(surface);
-    printf("surface quitted..\n");
+    rect->x = x;
+    rect->y = y;
+    rect->w = text_width;
+    rect->h = text_height;
+}
 
-    TTF_Quit();
-    printf("quitted TTF...\n");
-    if(font){
-        printf("closing font %p...\n", font);
-        ///TTF_CloseFont(font);
-        ///printf("closed font...\n");
+int main(int argc, char **argv) {
+    SDL_Event event;
+    SDL_Rect rect1, rect2;
+    SDL_Renderer *renderer;
+    SDL_Texture *texture1, *texture2;
+    SDL_Window *window;
+    int quit;
+
+
+    /* Inint TTF. */
+    SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO);
+    SDL_CreateWindowAndRenderer(WIDTH, HEIGHT, 0, &window, &renderer);
+    TTF_Init();
+    TTF_Font *font = TTF_OpenFont("Roboto-Regular.ttf", 24);
+    if (font == NULL) {
+        fprintf(stderr, "error: font not found\n");
+        exit(EXIT_FAILURE);
+    }
+    get_text_and_rect(renderer, 0, 0, "hello", font, &texture1, &rect1);
+    get_text_and_rect(renderer, 0, rect1.y + rect1.h, "world", font, &texture2, &rect2);
+
+    quit = 0;
+    while (!quit) {
+        while (SDL_PollEvent(&event) == 1) {
+            if (event.type == SDL_QUIT) {
+                quit = 1;
+            }
+        }
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+        SDL_RenderClear(renderer);
+
+        /* Use TTF textures. */
+        SDL_RenderCopy(renderer, texture1, NULL, &rect1);
+        SDL_RenderCopy(renderer, texture2, NULL, &rect2);
+
+        SDL_RenderPresent(renderer);
     }
 
-    SDL_DestroyRenderer(ren);
-    printf("renderer destroyed...\n");
+    /* Deinit TTF. */
+    SDL_DestroyTexture(texture1);
+    SDL_DestroyTexture(texture2);
+    TTF_Quit();
 
-    SDL_DestroyWindow(w);
-    printf("window destroyed...\n");
-
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
     SDL_Quit();
-    printf("SDL quitted");
-
-    printf("\n\n");
-    return 0;
+    return EXIT_SUCCESS;
 }
-
-
-void SDL_ExitWithError(const char *string){
-    SDL_Log("Error : %s > %s\n", string, SDL_GetError());
-    SDL_Quit();
-    exit(EXIT_FAILURE);
-}
-
-
-
-
-
-
-
