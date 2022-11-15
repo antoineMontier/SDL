@@ -17,6 +17,8 @@ int main(int argc, char *argv[]){//compile with     gcc text.c -o text -lm -lSDL
     printf("renderer opened ...\n");
     TTF_Font* font;
     printf("font opened...\n");
+    font = TTF_OpenFont("../Roboto/Roboto-Black.ttf", 12);
+    printf("font assigned...\n");
 
     if(0 != SDL_Init(/*flag*/ SDL_INIT_VIDEO))//lots of flags like SDL_INIT_AUDIO ; *_VIDEO ; *_EVERYTHING... To separe with '|'
         SDL_ExitWithError("Initialisation SDL failed");
