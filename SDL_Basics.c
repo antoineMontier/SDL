@@ -86,7 +86,7 @@ void closeSDL(SDL_Window**w, SDL_Renderer**r){
     SDL_Quit();
 }
 
-void background(SDL_Renderer* r, int red, int green, int blue, int w, int h, int p){
+void background(SDL_Renderer* r, int red, int green, int blue, int w, int h){
     color(r, red, green, blue, 255);
     rect(r, 0, 0, w, h, 1);
 }
