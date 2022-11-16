@@ -152,8 +152,20 @@ void triangle(SDL_Renderer* r, int x1, int y1, int x2, int y2, int x3, int y3, i
     }
 }
 
+double max2(double a, double b){
+    if(a>=b)
+        return a;
+    return b;
+}
+
+double min2(double a, double b){
+    if(a<=b)
+        return a;
+    return b;
+}
+
 void roundRect(SDL_Renderer* r, int x, int y, int width, int height, int filled, int topleft, int topright, int downleft, int downright){
-    if(topleft <= 0 && topright <= 0 && downleft <= 0 && downright <= 0){//if no surve is needed at all
+    if(topleft <= 0 && topright <= 0 && downleft <= 0 && downright <= 0){//if no curve is needed at all
         if(filled){
             for(int a = x ; a <= x + width ; a++){
                 for(int b = y ; b <= y + height ; b++){
@@ -169,8 +181,20 @@ void roundRect(SDL_Renderer* r, int x, int y, int width, int height, int filled,
             return;
         }
     }
+//=================================== modify the rounder of the corner to avoid bugs
+    if(topleft + topright >= width)
+        topleft = topright = width/2;
+    if(downleft + downright >= width)
+        downleft = downright = width/2;
+    
+    if(topright + downright >= height)
+        topleft = downright = height/2;
+    if(topleft + downleft >= height)
+        topleft = downleft = height/2;
+    double precision = 0.5;
+
+//====================================
     if(filled == 0){
-        double precision = 0.5;
         line(r, x + topleft , y             , x + width - topright  , y                     );//top line
         line(r, x + downleft, y + height    , x + width - downright , y + height            );//bottom line
         line(r, x           , y + topleft   , x                     , y + height - downleft );//left line
@@ -211,11 +235,69 @@ void roundRect(SDL_Renderer* r, int x, int y, int width, int height, int filled,
                 }
             }
         }
+    }else if(filled == 1){ 
+
+
+        //top left corner
+        for(int a = x ; a <= x + topleft ; a++){
+            for(int b = y ; b <= y + topleft ; b++){
+                if(dist(a, b, x + topleft, y + topleft) <= topleft){
+                    point(r, a, b);
+                }
+            }
+        }
+
+        //top right corner
+        for(int a = x + width - topright ; a <= x + width ; a++){
+            for(int b = y ; b <= y + topright ; b++){
+                if(dist(a, b, x + width - topright, y + topright) <= topright){
+                    point(r, a, b);
+                }
+            }
+        }
+
+        //bottom right corner
+        for(int a = x + width - downright ; a <= x + width ; a++){
+            for(int b = y + height- downright ; b <= y + height ; b++){
+                if(dist(a, b, x + width - downright, y + height - downright) <= downright){
+                    point(r, a, b);
+                }
+            }
+        }
+
+        //bottom left corner
+        for(int a = x ; a <= x + downleft ; a++){
+            for(int b = y + height - downleft; b <= y + height; b++){
+                if(dist(a, b, x + downleft, y + height - downleft) <= downleft){
+                    point(r, a, b);
+                }
+            }
+        }
+
+
+
+
+
+
+       
+        roundRect(r, x + topleft                        , y                             ,
+                    width - topleft - topright          , max2(topleft, topright)       , 1, 0, 0, 0, 0);//top rect
+
+        roundRect(r, x + downleft                       , y + height - max2(downleft, downright),
+                    width - downleft- downright  , max2(downleft, downright)      , 1, 0, 0, 0, 0);//bottom rect
+
+        roundRect(r, x                                  , y + topleft
+                    , max2(topleft, downleft)           , height - topleft - downleft   , 1, 0, 0, 0, 0);//left rect
+
+        roundRect(r, x + width - max2(topright, downright), y + topright
+                    , max2(topright, downright)         , height - topright  - downright, 1, 0, 0, 0, 0);//right rect
+
+
+
+        roundRect(r, x + max2(topleft, downleft), y + max2(topleft, topright),
+                    width - max2(downright, topright) - max2(topleft, downleft) , height - max2(downleft, downright) - max2(topleft, topright),
+                    1, 0, 0, 0, 0);//center rect
     }
-
-
-
-
 }
 
 void setFont(TTF_Font**font, char*font_file, int size){
