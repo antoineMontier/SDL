@@ -21,7 +21,7 @@ int inTheTriangle(double x1, double y1, double x2, double y2, double x3, double 
 double min(double a, double b, double c);
 double max(double a, double b, double c);
 void triangle(SDL_Renderer* r, int x1, int y1, int x2, int y2, int x3, int y3, int filled);
-void roundRect(SDL_Renderer* r, int x, int y, int width, int height, int filled, int curve);
+void roundRect(SDL_Renderer* r, int x, int y, int width, int height, int filled, int topleft, int topright, int downleft, int downright);
 void setFont(TTF_Font**font, char*font_file, int size);
 void text(SDL_Renderer*r, int x, int y, char*text, TTF_Font*font, int red, int green, int blue);
 void toChar(char*c, int n);
