@@ -15,7 +15,7 @@ void rect(SDL_Renderer* r, int x, int y, int width, int height, int filled);
 void circle(SDL_Renderer * r, int cx, int cy, int radius, int filled);
 void openSDL(int x, int y, int mode, SDL_Window**w, SDL_Renderer**r);
 void closeSDL(SDL_Window**w, SDL_Renderer**r);
-void background(SDL_Renderer* r, int red, int green, int blue, int w, int h, int p);
+void background(SDL_Renderer* r, int red, int green, int blue, int w, int h);
 int rollover(int mx, int my, int x, int y, int w, int h);
 int inTheTriangle(double x1, double y1, double x2, double y2, double x3, double y3, double a, double b);
 double min(double a, double b, double c);
