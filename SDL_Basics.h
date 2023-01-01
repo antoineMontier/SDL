@@ -26,3 +26,4 @@ void setFont(TTF_Font**font, char*font_file, int size);
 void text(SDL_Renderer*r, int x, int y, char*text, TTF_Font*font, int red, int green, int blue);
 void toChar(char*c, int n);
 double dist(double x1, double y1, double x2, double y2);
+void ellipse(SDL_Renderer*r, double x, double y, int w, int h, int filled);
