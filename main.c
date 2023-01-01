@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
 
     SDL_Window *win;   // open a window command
     SDL_Renderer *ren; // render creation
-    openSDL(WIDTH, HEIGHT, 0, "name test", &win, &ren);
+    openSDL(WIDTH, HEIGHT, 0, "SDL-Lab", &win, &ren);
     SDL_SetWindowResizable(win, SDL_TRUE);
     /*----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     SDL_bool program_launched = SDL_TRUE; // SDL_FALSE or SDL_TRUE
@@ -20,13 +20,8 @@ int main(int argc, char *argv[])
     { // principal loop
         SDL_Event evt;
 
-        color(ren, 0, 200, 0, 1);
-        rect(ren, 20, 20, 500, 400, 1);
-        for(double a = 0 ; a <= 255 ; a += 1){
-            color(ren, 0, 20, 200, a);
-            mark(ren, 50 + a, 100,1 );
-
-        }
+        color(ren, 255, 0, 0, 0);
+        ellipse(ren, 200, 250, 30, 70, 0);
         
 
 
