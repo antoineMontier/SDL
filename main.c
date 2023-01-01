@@ -22,7 +22,8 @@ int main(int argc, char *argv[])
 
         color(ren, 255, 0, 0, 0);
         ellipse(ren, 200, 250, 30, 70, 0);
-        
+        ellipse(ren, 200, 450, 30, 70, 1);
+
 
 
 
