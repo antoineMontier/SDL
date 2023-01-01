@@ -396,55 +396,54 @@ double dist(double x1, double y1, double x2, double y2)
 
 void ellipse(SDL_Renderer *r, double x, double y, int w, int h, int filled)
 {
-    if (!filled)
-    {
-        int xc = 0;
-        int yc = h;
-        long a2 = w * w;
-        long b2 = h * h;
-        long crit1 = -(a2 / 4 + w % 2 + b2);
-        long crit2 = -(b2 / 4 + h % 2 + a2);
-        long crit3 = -(b2 / 4 + h % 2);
-        long t = -a2 * yc;
-        long dxt = 2 * b2 * xc;
-        long dyt = -2 * a2 * yc;
-        long d2xt = 2 * b2;
-        long d2yt = 2 * a2;
 
-        while (yc >= 0 && xc <= w)
+    int xc = 0;
+    int yc = h;
+    long a2 = w * w;
+    long b2 = h * h;
+    long crit1 = -(a2/4+w % 2 + b2);
+    long crit2 = -(b2/4+h % 2 + a2);
+    long crit3 = -(b2/4+h % 2);
+    long t = -a2 * yc;
+    long dxt = 2* b2 * xc;
+    long dyt = -2*a2 *yc;
+    long d2xt = 2*b2;
+    long d2yt = 2*a2;
+
+    while (yc >= 0 && xc <= w)
+    {
+        if (!filled)
         {
             SDL_RenderDrawPoint(r, x + xc, y + yc);
             SDL_RenderDrawPoint(r, x - xc, y + yc);
             SDL_RenderDrawPoint(r, x + xc, y - yc);
             SDL_RenderDrawPoint(r, x - xc, y - yc);
-            /*if (xc != 0 || yc != 0)
-            {
-                SDL_RenderDrawPoint(r, x + yc, y + xc);
-                SDL_RenderDrawPoint(r, x - yc, y + xc);
-                SDL_RenderDrawPoint(r, x + yc, y - xc);
-                SDL_RenderDrawPoint(r, x - yc, y - xc);
-            }*/
-            if (t + b2 * xc <= crit1 || /* e(xc+1,yc-1/2) <= 0 */ t + a2 * yc <= crit3)
-            { /* e(xc+1/2,yc) <= 0 */
-                xc++;
-                dxt += d2xt;
-                t += dxt;
-            }
-            else if (t - a2 * yc > crit2)
-            { /* e(xc+1/2,yc-1) > 0 */
-                yc--;
-                dyt += d2yt;
-                t += dyt;
-            }
-            else
-            {
-                xc++;
-                dxt += d2xt;
-                t += dxt;
-                yc--;
-                dyt += d2yt;
-                t += dyt;
-            }
+        }
+        else
+        {
+            line(r, x - xc, y - yc, x + xc, y - yc);
+            line(r, x - xc, y + yc, x + xc, y + yc);
+        }
+        if (t + b2 * xc <= crit1 || /* e(xc+1,yc-1/2) <= 0 */ t + a2 * yc <= crit3)
+        { /* e(xc+1/2,yc) <= 0 */
+            xc++;
+            dxt+= d2xt;
+            t += dxt;
+        }
+        else if (t - a2 * yc > crit2)
+        {
+            yc--;
+            dyt += d2yt;
+            t += dyt;
+        }
+        else
+        {
+            xc++;
+            dxt += d2xt;
+            t += dxt;
+            yc--;
+            dyt +=d2yt;
+            t += dyt;
         }
     }
 }
