@@ -20,11 +20,25 @@ int main(int argc, char *argv[])
     { // principal loop
         SDL_Event evt;
 
+        //ellipse
         color(ren, 255, 0, 0, 0);
         ellipse(ren, 200, 250, 30, 70, 0);
         ellipse(ren, 200, 450, 30, 70, 1);
+        
+        //triangle
+        color(ren, 0, 255, 0, 0);
+        triangle(ren, 800, 800, 900, 950, 850, 700, 1);
+        triangle(ren, 900, 750, 920, 770, 980, 600, 0);
 
+        //circle
+        color(ren, 0, 0, 255, 0);
+        circle(ren, 100, 800, 30, 1);
+        circle(ren, 100, 900, 30, 0);
 
+        //roundRect
+        color(ren, 255, 0, 255, 0);
+        roundRect(ren, 750, 100, 200, 100, 1, 0, 0, 0, 70);
+        roundRect(ren, 750, 250, 200, 100, 0, 70, 0, 0, 70);
 
 
         SDL_Delay(100);
