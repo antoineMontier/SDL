@@ -110,26 +110,6 @@ int inTheTriangle(double x1, double y1, double x2, double y2, double x3, double 
     return 0;
 }
 
-double min(double a, double b, double c)
-{
-    if (a < b && a < c)
-        return a;
-    else if (b < a && b < c)
-        return b;
-    else if (c < a && c < b)
-        return c;
-}
-
-double max(double a, double b, double c)
-{
-    if (a > b && a > c)
-        return a;
-    else if (b > a && b > c)
-        return b;
-    else if (c > a && c > b)
-        return c;
-}
-
 void triangle(SDL_Renderer *r, int x1, int y1, int x2, int y2, int x3, int y3, int filled)
 {
     line(r, x1, y1, x2, y2);
