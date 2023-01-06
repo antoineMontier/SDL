@@ -135,36 +135,21 @@ void triangle(SDL_Renderer *r, int x1, int y1, int x2, int y2, int x3, int y3, i
     line(r, x1, y1, x2, y2);
     line(r, x2, y2, x3, y3);
     line(r, x3, y3, x1, y1);
-    if (filled)
-    {
-        int s_x = min(x1, x2, x3);
-        int s_y = min(y1, y2, y3);
-        int f_x = max(x1, x2, x3);
-        int f_y = max(y1, y2, y3);
+    
+    if(!filled)
+        return;
 
-        for (int a = s_x; a <= f_x; a++)
-        {
-            for (int b = s_y; b <= f_y; b++)
-            {
-                if (inTheTriangle(x1, y1, x2, y2, x3, y3, a, b))
-                    point(r, a, b);
-            }
-        }
-    }
-}
+    double s_x = fmin(x1, fmin(x2, x3));
+    double s_y = fmin(y1, fmin(y2, y3));
+    double f_x = fmax(x1, fmax(x2, x3));
+    double f_y = fmax(y1, fmax(y2, y3));
+    for (double a = s_x; a <= f_x; a++)
+        for (double b = s_y; b <= f_y; b++)
+            if (inTheTriangle(x1, y1, x2, y2, x3, y3, a, b))
+                point(r, a, b);
+        
+    
 
-double max2(double a, double b)
-{
-    if (a >= b)
-        return a;
-    return b;
-}
-
-double min2(double a, double b)
-{
-    if (a <= b)
-        return a;
-    return b;
 }
 
 void roundRect(SDL_Renderer *r, int x, int y, int width, int height, int filled, int topleft, int topright, int downleft, int downright)
@@ -311,17 +296,17 @@ void roundRect(SDL_Renderer *r, int x, int y, int width, int height, int filled,
         }
 
         roundRect(r, x + topleft, y,
-                  width - topleft - topright, max2(topleft, topright), 1, 0, 0, 0, 0); // top rect
+                  width - topleft - topright, fmax(topleft, topright), 1, 0, 0, 0, 0); // top rect
 
-        roundRect(r, x + downleft, y + height - max2(downleft, downright),
-                  width - downleft - downright, max2(downleft, downright), 1, 0, 0, 0, 0); // bottom rect
+        roundRect(r, x + downleft, y + height - fmax(downleft, downright),
+                  width - downleft - downright, fmax(downleft, downright), 1, 0, 0, 0, 0); // bottom rect
 
-        roundRect(r, x, y + topleft, max2(topleft, downleft), height - topleft - downleft, 1, 0, 0, 0, 0); // left rect
+        roundRect(r, x, y + topleft, fmax(topleft, downleft), height - topleft - downleft, 1, 0, 0, 0, 0); // left rect
 
-        roundRect(r, x + width - max2(topright, downright), y + topright, max2(topright, downright), height - topright - downright, 1, 0, 0, 0, 0); // right rect
+        roundRect(r, x + width - fmax(topright, downright), y + topright, fmax(topright, downright), height - topright - downright, 1, 0, 0, 0, 0); // right rect
 
-        roundRect(r, x + max2(topleft, downleft), y + max2(topleft, topright),
-                  width - max2(downright, topright) - max2(topleft, downleft), height - max2(downleft, downright) - max2(topleft, topright),
+        roundRect(r, x + fmax(topleft, downleft), y + fmax(topleft, topright),
+                  width - fmax(downright, topright) - fmax(topleft, downleft), height - fmax(downleft, downright) - fmax(topleft, topright),
                   1, 0, 0, 0, 0); // center rect
     }
 }
