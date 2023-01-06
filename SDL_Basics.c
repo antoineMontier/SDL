@@ -10,12 +10,8 @@ void SDL_ExitWithError(const char *string)
 void mark(SDL_Renderer *r, int x, int y, int thickness)
 {
     for (int a = y - thickness; a <= y + thickness; a++)
-    {
         for (int b = x - thickness; b <= x + thickness; b++)
-        {
             point(r, b, a);
-        }
-    }
 }
 
 void point(SDL_Renderer *r, int x, int y)
@@ -44,37 +40,22 @@ void rect(SDL_Renderer *r, int x, int y, int width, int height, int filled)
     rectangle.w = width;
     rectangle.h = height;
 
-    if (filled)
-    {
-        if (SDL_RenderFillRect(r, &rectangle) != 0)
+    if (filled && SDL_RenderFillRect(r, &rectangle) != 0)
             SDL_ExitWithError("failed to draw a full rectangle");
-    }
-    if (!filled)
-    {
-        if (SDL_RenderDrawRect(r, &rectangle) != 0)
+    
+    else if (SDL_RenderDrawRect(r, &rectangle) != 0)
             SDL_ExitWithError("failed to draw a full rectangle");
-    }
 }
 
 void circle(SDL_Renderer *r, int cx, int cy, int radius, int filled)
 {
     double precision = 0.5;
     for (int a = cx - radius; a <= cx + radius; a++)
-    {
         for (int b = cy - radius; b <= cy + radius; b++)
-        {
-            if (filled)
-            {
-                if (dist(a, b, cx, cy) <= radius)
+            if (filled && dist(a, b, cx, cy) <= radius)
                     point(r, a, b);
-            }
-            else
-            {
-                if (dist(a, b, cx, cy) <= radius + precision && dist(a, b, cx, cy) >= radius - precision)
+            else if (dist(a, b, cx, cy) <= radius + precision && dist(a, b, cx, cy) >= radius - precision)
                     point(r, a, b);
-            }
-        }
-    }
 }
 
 void openSDL(int x, int y, int mode, const char *name, SDL_Window **w, SDL_Renderer **r)
