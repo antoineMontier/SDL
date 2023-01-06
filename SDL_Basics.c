@@ -156,15 +156,10 @@ void roundRect(SDL_Renderer *r, int x, int y, int width, int height, int filled,
 {
     if (topleft <= 0 && topright <= 0 && downleft <= 0 && downright <= 0)
     { // if no curve is needed at all
-        if (filled)
-        {
+        if (filled){
             for (int a = x; a <= x + width; a++)
-            {
                 for (int b = y; b <= y + height; b++)
-                {
                     point(r, a, b);
-                }
-            }
             return;
         }
         else
@@ -306,8 +301,8 @@ void roundRect(SDL_Renderer *r, int x, int y, int width, int height, int filled,
         roundRect(r, x + width - fmax(topright, downright), y + topright, fmax(topright, downright), height - topright - downright, 1, 0, 0, 0, 0); // right rect
 
         roundRect(r, x + fmax(topleft, downleft), y + fmax(topleft, topright),
-                  width - fmax(downright, topright) - fmax(topleft, downleft), height - fmax(downleft, downright) - fmax(topleft, topright),
-                  1, 0, 0, 0, 0); // center rect
+                    width - fmax(downright, topright) - fmax(topleft, downleft), height - fmax(downleft, downright) - fmax(topleft, topright),
+                    1, 0, 0, 0, 0); // center rect
     }
 }
 
@@ -367,14 +362,9 @@ void ellipse(SDL_Renderer *r, double x, double y, int w, int h, int filled)
     int yc = h;
     long a2 = w * w;
     long b2 = h * h;
-    long crit1 = -(a2/4+w % 2 + b2);
-    long crit2 = -(b2/4+h % 2 + a2);
-    long crit3 = -(b2/4+h % 2);
     long t = -a2 * yc;
-    long dxt = 2* b2 * xc;
+    long dxt = 2*b2 * xc;
     long dyt = -2*a2 *yc;
-    long d2xt = 2*b2;
-    long d2yt = 2*a2;
 
     while (yc >= 0 && xc <= w)
     {
@@ -390,25 +380,25 @@ void ellipse(SDL_Renderer *r, double x, double y, int w, int h, int filled)
             line(r, x - xc, y - yc, x + xc, y - yc);
             line(r, x - xc, y + yc, x + xc, y + yc);
         }
-        if (t + b2 * xc <= crit1 || /* e(xc+1,yc-1/2) <= 0 */ t + a2 * yc <= crit3)
+        if (t + b2 * xc <= -(a2/4+w % 2 + b2) || /* e(xc+1,yc-1/2) <= 0 */ t + a2 * yc <= -(b2/4+h % 2))
         { /* e(xc+1/2,yc) <= 0 */
             xc++;
-            dxt+= d2xt;
+            dxt+= 2*b2;
             t += dxt;
         }
-        else if (t - a2 * yc > crit2)
+        else if (t - a2 * yc > -(b2/4+h % 2 + a2))
         {
             yc--;
-            dyt += d2yt;
+            dyt += 2*a2;
             t += dyt;
         }
         else
         {
             xc++;
-            dxt += d2xt;
+            dxt += 2*b2;
             t += dxt;
             yc--;
-            dyt +=d2yt;
+            dyt += 2*a2;
             t += dyt;
         }
     }
